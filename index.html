@@ -7,21 +7,19 @@
   <!-- Proper iPhone viewport handling -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
-  <!-- Safari/iOS toolbar color (must be solid). Pick a mid-tone that complements the gradient -->
-  <meta name="theme-color" content="#d89dd0" />
-  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#d89dd0" />
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#8a6fb2" />
+  <!-- Dynamic toolbar color: start blue; JS will update this on scroll -->
+  <meta id="theme-color" name="theme-color" content="#9fd3ff" />
 
-  <!-- Optional: if added to Home Screen (PWA look), uncomment:
+  <!-- Optional PWA-style (if added to Home Screen)
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   -->
 
   <style>
-    /* Solid fallback to avoid white flash during iOS overscroll */
+    /* Solid fallback to avoid white flashes during iOS rubber-banding */
     html, body {
       height: 100%;
-      background-color: #d89dd0; /* match theme-color */
+      background-color: #d89dd0; /* mid-tone between blue & pink/red */
     }
 
     body {
@@ -47,12 +45,12 @@
       inset: 0;
       z-index: -1;
 
-      /* Blue (top) → Valentine pink → Pink/Red (bottom) */
+      /* Sky blue (top) → Valentine pink → romantic pink/red (bottom) */
       background: linear-gradient(
         to bottom,
         #9fd3ff 0%,
         #ff7eb9 60%,
-        #ff4d6d 100%
+        #ff2d55 100%
       );
     }
 
@@ -252,6 +250,62 @@
 
         setInterval(createFloatingHeart, 500);
       });
+
+      // ---- Toolbar color follows the gradient at scroll position ----
+      (function() {
+        const themeMeta = document.querySelector('meta[name="theme-color"]');
+        if (!themeMeta) return;
+
+        // Gradient stops (must match CSS): top blue -> mid pink -> bottom red/pink
+        const TOP = { r: 0x9f, g: 0xd3, b: 0xff };   // #9fd3ff
+        const MID = { r: 0xff, g: 0x7e, b: 0xb9 };   // #ff7eb9 (at 60%)
+        const BOT = { r: 0xff, g: 0x2d, b: 0x55 };   // #ff2d55 (at 100%)
+        const MID_POS = 0.60;
+
+        const clamp01 = v => Math.max(0, Math.min(1, v));
+        const lerp = (a, b, t) => a + (b - a) * t;
+        const mix = (c1, c2, t) => ({
+          r: Math.round(lerp(c1.r, c2.r, t)),
+          g: Math.round(lerp(c1.g, c2.g, t)),
+          b: Math.round(lerp(c1.b, c2.b, t))
+        });
+        const toHex = c => '#' + [c.r, c.g, c.b].map(v => v.toString(16).padStart(2, '0')).join('');
+
+        let ticking = false;
+        function updateThemeColor() {
+          const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+          const p = clamp01(window.scrollY / maxScroll);
+
+          // Piecewise interpolation: TOP -> MID (0..0.6), then MID -> BOT (0.6..1)
+          let color;
+          if (p <= MID_POS) {
+            const t = p / MID_POS;
+            color = mix(TOP, MID, t);
+          } else {
+            const t = (p - MID_POS) / (1 - MID_POS);
+            color = mix(MID, BOT, t);
+          }
+
+          const hex = toHex(color);
+          themeMeta.setAttribute('content', hex);
+          ticking = false;
+        }
+
+        function onScroll() {
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(updateThemeColor);
+          }
+        }
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll);
+        window.addEventListener('orientationchange', onScroll);
+
+        // Initialize once on load
+        updateThemeColor();
+      })();
+      // ----------------------------------------------------------------
     </script>
   </div>
 </body>
