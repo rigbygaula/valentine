@@ -7,19 +7,39 @@
   <!-- Proper iPhone viewport handling -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
-  <!-- Dynamic toolbar color: start blue; JS will update this on scroll -->
+  <!-- Toolbar color (JS will keep this synced with the gradient position) -->
   <meta id="theme-color" name="theme-color" content="#9fd3ff" />
 
-  <!-- Optional PWA-style (if added to Home Screen)
+  <!-- Password gate EARLY, so nothing loads if wrong -->
+  <script>
+    (function () {
+      var answer = prompt("What did I think your name was?");
+      var ok = false;
+      if (answer != null) {
+        var normalized = answer.trim().toLowerCase();
+        ok = (normalized === "jordan");
+      }
+      if (!ok) {
+        // Do not show the website at all
+        window.location.replace("about:blank");
+      } else {
+        // Set a flag we can check later if needed
+        window.__ACCESS_OK__ = true;
+      }
+    })();
+  </script>
+
+  <!-- Optional PWA-style if added to Home Screen
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   -->
 
   <style>
-    /* Solid fallback to avoid white flashes during iOS rubber-banding */
-    html, body {
-      height: 100%;
-      background-color: #d89dd0; /* mid-tone between blue & pink/red */
+    /* Solid fallback to avoid white flashes during iOS rubber-banding.
+       Match top area to the sky-blue so bounce at top looks natural. */
+    html {
+      min-height: 100%;
+      background-color: #9fd3ff; /* sky-blue (top stop) */
     }
 
     body {
@@ -33,24 +53,25 @@
       line-height: 1.8;
       overflow-x: hidden;
 
-      /* Prepare for ::before gradient layer */
+      /* For the document-anchored gradient layer */
       position: relative;
       z-index: 0;
+      min-height: 100dvh;
     }
 
-    /* Fixed, full-viewport gradient that works reliably on iOS Safari */
+    /* Document-anchored gradient:
+       - It scrolls WITH the page, so the top of the PAGE is blue,
+         and the bottom is pink/red when you get there. */
     body::before {
       content: "";
-      position: fixed;
+      position: absolute; /* <-- anchors to the document height, not viewport */
       inset: 0;
       z-index: -1;
-
-      /* Sky blue (top) → Valentine pink → romantic pink/red (bottom) */
       background: linear-gradient(
         to bottom,
-        #9fd3ff 0%,
-        #ff7eb9 60%,
-        #ff2d55 100%
+        #9fd3ff 0%,   /* sky-blue at very top */
+        #ff7eb9 60%,  /* Valentine pink mid-way */
+        #ff2d55 100%  /* romantic pink/red at bottom */
       );
     }
 
@@ -146,19 +167,6 @@
 </head>
 
 <body>
-
-  <!-- Password prompt -->
-  <script>
-    var password = prompt("What did I think your name was?");
-    if (password === "jordan" || password === "Jordan" || password === "jordan " || password === "Jordan ") {
-      window.scrollTo(0, 0); // helps mobile viewport settle after prompt
-    } else {
-      document.body.innerHTML = "<h1>Access Denied 💔</h1>";
-      document.body.style.background = "#1e1e1e";
-      document.body.style.color = "#fff";
-    }
-  </script>
-
   <div class="card" id="page">
     <h1>Hello my beautiful girl :) </h1>
 
@@ -192,121 +200,120 @@
       Yay! I was a little worried you would say no 😅<br>
       I love you so much girl!
     </p>
+  </div>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {
-        const yesBtn = document.getElementById("yesBtn");
-        const noBtn = document.getElementById("noBtn");
-        const response = document.getElementById("response");
+  <script>
+    // --- Main interactions ---
+    document.addEventListener("DOMContentLoaded", function() {
+      const yesBtn = document.getElementById("yesBtn");
+      const noBtn = document.getElementById("noBtn");
+      const response = document.getElementById("response");
 
-        // Yes button click
-        yesBtn.addEventListener("click", function() {
-          response.style.display = "block";
-          response.scrollIntoView({ behavior: 'smooth' });
+      // Yes button click
+      yesBtn.addEventListener("click", function() {
+        response.style.display = "block";
+        response.scrollIntoView({ behavior: 'smooth' });
 
-          // Create 5 floating love emojis
-          for (let i = 0; i < 5; i++) {
-            createLoveEmoji();
-          }
-        });
-
-        function createLoveEmoji() {
-          const emoji = document.createElement('div');
-          emoji.className = 'love-emoji';
-          const hearts = ['💖','💙','💜','💘','💞'];
-          emoji.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-
-          emoji.style.left = Math.random() * window.innerWidth + 'px';
-          emoji.style.top = (window.innerHeight - 100) + 'px';
-
-          document.body.appendChild(emoji);
-          setTimeout(() => { emoji.remove(); }, 2000);
+        // Create 5 floating love emojis
+        for (let i = 0; i < 5; i++) {
+          createLoveEmoji();
         }
-
-        // No button shrinking
-        let size = 100;
-        noBtn.addEventListener("click", function() {
-          size -= 10;
-          if (size < 30) size = 30;
-          noBtn.style.transform = "scale(" + size/100 + ")";
-        });
-
-        // Continuous floating hearts in background
-        function createFloatingHeart() {
-          const heart = document.createElement('div');
-          heart.className = 'floating-heart';
-          const hearts = ['💖','💙','💜','💘','💞','❤️','💕'];
-          heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-
-          heart.style.left = Math.random() * window.innerWidth + 'px';
-          heart.style.bottom = '-50px';
-
-          const duration = 2 + Math.random() * 3;
-          heart.style.animationDuration = duration + 's';
-
-          document.body.appendChild(heart);
-          setTimeout(() => { heart.remove(); }, duration * 1000);
-        }
-
-        setInterval(createFloatingHeart, 500);
       });
 
-      // ---- Toolbar color follows the gradient at scroll position ----
-      (function() {
-        const themeMeta = document.querySelector('meta[name="theme-color"]');
-        if (!themeMeta) return;
+      function createLoveEmoji() {
+        const emoji = document.createElement('div');
+        emoji.className = 'love-emoji';
+        const hearts = ['💖','💙','💜','💘','💞'];
+        emoji.textContent = hearts[Math.floor(Math.random() * hearts.length)];
 
-        // Gradient stops (must match CSS): top blue -> mid pink -> bottom red/pink
-        const TOP = { r: 0x9f, g: 0xd3, b: 0xff };   // #9fd3ff
-        const MID = { r: 0xff, g: 0x7e, b: 0xb9 };   // #ff7eb9 (at 60%)
-        const BOT = { r: 0xff, g: 0x2d, b: 0x55 };   // #ff2d55 (at 100%)
-        const MID_POS = 0.60;
+        emoji.style.left = Math.random() * window.innerWidth + 'px';
+        emoji.style.top = (window.innerHeight - 100) + 'px';
 
-        const clamp01 = v => Math.max(0, Math.min(1, v));
-        const lerp = (a, b, t) => a + (b - a) * t;
-        const mix = (c1, c2, t) => ({
-          r: Math.round(lerp(c1.r, c2.r, t)),
-          g: Math.round(lerp(c1.g, c2.g, t)),
-          b: Math.round(lerp(c1.b, c2.b, t))
-        });
-        const toHex = c => '#' + [c.r, c.g, c.b].map(v => v.toString(16).padStart(2, '0')).join('');
+        document.body.appendChild(emoji);
+        setTimeout(() => { emoji.remove(); }, 2000);
+      }
 
-        let ticking = false;
-        function updateThemeColor() {
-          const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-          const p = clamp01(window.scrollY / maxScroll);
+      // No button shrinking
+      let size = 100;
+      noBtn.addEventListener("click", function() {
+        size -= 10;
+        if (size < 30) size = 30;
+        noBtn.style.transform = "scale(" + size/100 + ")";
+      });
 
-          // Piecewise interpolation: TOP -> MID (0..0.6), then MID -> BOT (0.6..1)
-          let color;
-          if (p <= MID_POS) {
-            const t = p / MID_POS;
-            color = mix(TOP, MID, t);
-          } else {
-            const t = (p - MID_POS) / (1 - MID_POS);
-            color = mix(MID, BOT, t);
-          }
+      // Continuous floating hearts in background
+      function createFloatingHeart() {
+        const heart = document.createElement('div');
+        heart.className = 'floating-heart';
+        const hearts = ['💖','💙','💜','💘','💞','❤️','💕'];
+        heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
 
-          const hex = toHex(color);
-          themeMeta.setAttribute('content', hex);
-          ticking = false;
+        heart.style.left = Math.random() * window.innerWidth + 'px';
+        heart.style.bottom = '-50px';
+
+        const duration = 2 + Math.random() * 3;
+        heart.style.animationDuration = duration + 's';
+
+        document.body.appendChild(heart);
+        setTimeout(() => { heart.remove(); }, duration * 1000);
+      }
+
+      setInterval(createFloatingHeart, 500);
+    });
+
+    // --- Keep iPhone Safari bars in sync with gradient position ---
+    (function() {
+      const themeMeta = document.querySelector('meta[name="theme-color"]');
+      if (!themeMeta) return;
+
+      // Gradient stops (must match CSS body::before)
+      const TOP = { r: 0x9f, g: 0xd3, b: 0xff }; // #9fd3ff
+      const MID = { r: 0xff, g: 0x7e, b: 0xb9 }; // #ff7eb9 at 60%
+      const BOT = { r: 0xff, g: 0x2d, b: 0x55 }; // #ff2d55 at 100%
+      const MID_POS = 0.60;
+
+      const clamp01 = v => Math.max(0, Math.min(1, v));
+      const lerp = (a, b, t) => a + (b - a) * t;
+      const mix = (c1, c2, t) => ({
+        r: Math.round(lerp(c1.r, c2.r, t)),
+        g: Math.round(lerp(c1.g, c2.g, t)),
+        b: Math.round(lerp(c1.b, c2.b, t))
+      });
+      const toHex = c => '#' + [c.r, c.g, c.b].map(v => v.toString(16).padStart(2, '0')).join('');
+
+      let ticking = false;
+      function updateThemeColor() {
+        const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        const p = clamp01(window.scrollY / maxScroll);
+
+        // Match the visual gradient mapping along the document
+        let color;
+        if (p <= MID_POS) {
+          const t = p / MID_POS;
+          color = mix(TOP, MID, t);
+        } else {
+          const t = (p - MID_POS) / (1 - MID_POS);
+          color = mix(MID, BOT, t);
         }
 
-        function onScroll() {
-          if (!ticking) {
-            ticking = true;
-            requestAnimationFrame(updateThemeColor);
-          }
+        themeMeta.setAttribute('content', toHex(color));
+        ticking = false;
+      }
+
+      function onScrollOrResize() {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(updateThemeColor);
         }
+      }
 
-        window.addEventListener('scroll', onScroll, { passive: true });
-        window.addEventListener('resize', onScroll);
-        window.addEventListener('orientationchange', onScroll);
+      window.addEventListener('scroll', onScrollOrResize, { passive: true });
+      window.addEventListener('resize', onScrollOrResize);
+      window.addEventListener('orientationchange', onScrollOrResize);
 
-        // Initialize once on load
-        updateThemeColor();
-      })();
-      // ----------------------------------------------------------------
-    </script>
-  </div>
+      // Initialize once on load
+      updateThemeColor();
+    })();
+  </script>
 </body>
 </html>
