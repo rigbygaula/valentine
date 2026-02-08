@@ -7,33 +7,29 @@
 
   <style>
     html, body {
-      height: 100%;
-      padding: 0;
       margin: 0;
-      background: linear-gradient(to bottom, #9fd3ff, #ff7eb9);
-      color: #ffffff;
+      padding: 0;
+      height: 100%;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      text-align: center;
-      line-height: 1.8;
-      overflow-x: hidden;
+      overflow: hidden; /* prevent double scroll */
     }
 
-    /* Ensure background extends into iPhone safe area */
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
+    /* Full viewport wrapper to fix iPhone white bars */
+    .viewport-wrapper {
       height: 100vh;
-      background: inherit;
-      z-index: -1;
+      width: 100vw;
+      overflow-y: auto; /* scrollable content */
+      background: linear-gradient(to bottom, #9fd3ff, #ff7eb9);
+      color: #ffffff;
+      text-align: center;
+      line-height: 1.8;
+      -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
     }
 
     .card {
       max-width: 700px;
       margin: 0 auto;
-      padding: calc(60px + env(safe-area-inset-top)) 20px 40px 20px; /* add safe area */
+      padding: 60px 20px 40px 20px;
     }
 
     h1 {
@@ -86,7 +82,7 @@
       box-shadow: 0 12px 25px rgba(0,0,0,0.4);
     }
 
-    /* Continuous floating hearts in background */
+    /* Floating hearts in background */
     .floating-heart {
       position: fixed;
       font-size: 20px;
@@ -120,7 +116,6 @@
     }
   </style>
 </head>
-
 <body>
 
   <!-- Password prompt -->
@@ -135,99 +130,101 @@
     }
   </script>
 
-  <div class="card" id="page">
+  <div class="viewport-wrapper">
+    <div class="card" id="page">
 
-    <h1>Hello my beautiful girl :) </h1>
+      <h1>Hello my beautiful girl :) </h1>
 
-    <p>Given we are 1500 miles apart, I figured I would write you some digital art. I hope you know by now you have my heart.</p>
+      <p>Given we are 1500 miles apart, I figured I would write you some digital art. I hope you know by now you have my heart.</p>
 
-    <div class="photo-pair">
-      <img src="photo1.jpeg" alt="">
-      <img src="photo2.jpeg" alt="">
-    </div>
+      <div class="photo-pair">
+        <img src="photo1.jpeg" alt="">
+        <img src="photo2.jpeg" alt="">
+      </div>
 
-    <p>Everyday I miss you more, I can't believe we met when we were sophomores...</p>
+      <p>Everyday I miss you more, I can't believe we met when we were sophomores...</p>
 
-    <div class="photo-pair">
-      <img src="photo3.jpeg" alt="">
-      <img src="photo4.jpeg" alt="">
-    </div>
+      <div class="photo-pair">
+        <img src="photo3.jpeg" alt="">
+        <img src="photo4.jpeg" alt="">
+      </div>
 
-    <p>So meli, if you would allow me, I have only one question for you...</p>
+      <p>So meli, if you would allow me, I have only one question for you...</p>
 
-    <div class="photo-pair">
-      <img src="photo5.jpeg" alt="">
-      <img src="photo6.jpeg" alt="">
-    </div>
+      <div class="photo-pair">
+        <img src="photo5.jpeg" alt="">
+        <img src="photo6.jpeg" alt="">
+      </div>
 
-    <h2>Will you be my Valentine? 💫</h2>
+      <h2>Will you be my Valentine? 💫</h2>
 
-    <button id="yesBtn">Yes Jesse!</button>
-    <button id="noBtn">No 😢</button>
+      <button id="yesBtn">Yes Jesse!</button>
+      <button id="noBtn">No 😢</button>
 
-    <p id="response" style="display:none; margin-top:20px; font-size:20px;">
-      Yay! I was a little worried you would say no 😅<br>
-      I love you so much girl!
-    </p>
+      <p id="response" style="display:none; margin-top:20px; font-size:20px;">
+        Yay! I was a little worried you would say no 😅<br>
+        I love you so much girl!
+      </p>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {
-        const yesBtn = document.getElementById("yesBtn");
-        const noBtn = document.getElementById("noBtn");
-        const response = document.getElementById("response");
+      <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          const yesBtn = document.getElementById("yesBtn");
+          const noBtn = document.getElementById("noBtn");
+          const response = document.getElementById("response");
 
-        // Yes button scroll + floating love emojis
-        yesBtn.addEventListener("click", function() {
-          response.style.display = "block";
-          response.scrollIntoView({ behavior: 'smooth' });
+          // Yes button scroll + floating love emojis
+          yesBtn.addEventListener("click", function() {
+            response.style.display = "block";
+            response.scrollIntoView({ behavior: 'smooth' });
 
-          for (let i = 0; i < 5; i++) {
-            createLoveEmoji();
+            for (let i = 0; i < 5; i++) {
+              createLoveEmoji();
+            }
+          });
+
+          function createLoveEmoji() {
+            const emoji = document.createElement('div');
+            emoji.className = 'love-emoji';
+            const hearts = ['💖','💙','💜','💘','💞'];
+            emoji.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+
+            emoji.style.left = Math.random() * window.innerWidth + 'px';
+            emoji.style.top = (window.innerHeight - 100) + 'px';
+
+            document.body.appendChild(emoji);
+            setTimeout(() => { emoji.remove(); }, 2000);
           }
+
+          // No button shrinking
+          let size = 100;
+          noBtn.addEventListener("click", function() {
+            size -= 10;
+            if(size < 30) size = 30;
+            noBtn.style.transform = "scale(" + size/100 + ")";
+          });
+
+          // Continuous floating hearts in background
+          function createFloatingHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'floating-heart';
+            const hearts = ['💖','💙','💜','💘','💞','❤️','💕'];
+            heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+
+            heart.style.left = Math.random() * window.innerWidth + 'px';
+            heart.style.bottom = '-50px';
+
+            const duration = 2 + Math.random() * 3;
+            heart.style.animationDuration = duration + 's';
+
+            document.body.appendChild(heart);
+            setTimeout(() => { heart.remove(); }, duration * 1000);
+          }
+
+          setInterval(createFloatingHeart, 500);
         });
+      </script>
 
-        function createLoveEmoji() {
-          const emoji = document.createElement('div');
-          emoji.className = 'love-emoji';
-          const hearts = ['💖','💙','💜','💘','💞'];
-          emoji.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-
-          emoji.style.left = Math.random() * window.innerWidth + 'px';
-          emoji.style.top = (window.innerHeight - 100) + 'px';
-
-          document.body.appendChild(emoji);
-          setTimeout(() => { emoji.remove(); }, 2000);
-        }
-
-        // No button shrinking
-        let size = 100;
-        noBtn.addEventListener("click", function() {
-          size -= 10;
-          if(size < 30) size = 30;
-          noBtn.style.transform = "scale(" + size/100 + ")";
-        });
-
-        // Continuous floating hearts in background
-        function createFloatingHeart() {
-          const heart = document.createElement('div');
-          heart.className = 'floating-heart';
-          const hearts = ['💖','💙','💜','💘','💞','❤️','💕'];
-          heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-
-          heart.style.left = Math.random() * window.innerWidth + 'px';
-          heart.style.bottom = '-50px';
-
-          const duration = 2 + Math.random() * 3;
-          heart.style.animationDuration = duration + 's';
-
-          document.body.appendChild(heart);
-          setTimeout(() => { heart.remove(); }, duration * 1000);
-        }
-
-        setInterval(createFloatingHeart, 500);
-      });
-    </script>
-
+    </div>
   </div>
 </body>
 </html>
