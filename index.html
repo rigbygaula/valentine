@@ -88,10 +88,15 @@
 
   <!-- Password prompt -->
   <script>
-    var password = prompt("What did I think your name was?");
-    if(password !== "jordan" && password !== "Jordan") {
-      document.body.innerHTML = "<h1>Access Denied 💔</h1>";
-    }
+  var password = prompt("What did I think your name was?");
+  if(password === "jordan" || password === "Jordan" || password === "jordan " || password === "Jordan " ) {
+    // do nothing, let the page show
+  } else {
+    // completely block the page
+    document.body.innerHTML = "<h1>Access Denied 💔</h1>";
+    document.body.style.background = "#1e1e1e";
+    document.body.style.color = "#fff";
+  }
   </script>
 
   <div class="card">
