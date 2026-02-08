@@ -96,10 +96,10 @@
 
   <div class="card">
 
-    <h1>Hi my love 💙</h1>
+    <h1>Hello my beautiful girl :) </h1>
 
     <!-- First text block -->
-    <p>Even though we’re far apart, I think about you every single day.</p>
+    <p>Given we are 1500 miles apart, I figured I would write you some digital art. I hope you know by now you have my heart. </p>
 
     <!-- First 2 photos -->
     <div class="photo-pair">
@@ -108,7 +108,7 @@
     </div>
 
     <!-- Second text block -->
-    <p>Some moments feel bigger when I imagine sharing them with you.</p>
+    <p> Everyday I miss you more, I can't believe we met when we were sophmores...</p>
 
     <!-- Next 2 photos -->
     <div class="photo-pair">
@@ -117,7 +117,7 @@
     </div>
 
     <!-- Third text block -->
-    <p>No matter the distance, I always feel close to you in my heart.</p>
+    <p>So meli, if you would allow me, I have only one question for you...</p>
 
     <!-- Last 2 photos -->
     <div class="photo-pair">
@@ -128,21 +128,29 @@
     <!-- Final question -->
     <h2>Will you be my Valentine? 💫</h2>
 
-    <button onclick="showLove()">
-      Yes, always
-    </button>
+<button id="yesBtn" onclick="showLove()">Yes, always</button>
+<button id="noBtn" onclick="shrinkNo()">No 😢</button>
 
-    <p id="response" style="display:none; margin-top:20px; font-size:18px;">
-      I can’t wait to spend so many more Valentines with you 💙
-    </p>
+<p id="response" style="display:none; margin-top:20px; font-size:18px;">
+  I can’t wait to spend so many more Valentines with you 💙
+</p>
 
-  </div>
+<script>
+  // Yes button
+  function showLove() {
+    document.getElementById("response").style.display = "block";
+  }
 
-  <script>
-    function showLove() {
-      document.getElementById("response").style.display = "block";
-    }
-  </script>
+  // No button shrinking
+  let noBtn = document.getElementById("noBtn");
+  let size = 100; // starting percent
+  function shrinkNo() {
+    size -= 10; // shrink by 10% each click
+    if(size < 30) size = 30; // don't disappear completely
+    noBtn.style.transform = "scale(" + size/100 + ")";
+  }
+</script>
+
 
 </body>
 </html>
