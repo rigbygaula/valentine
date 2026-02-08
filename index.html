@@ -10,39 +10,59 @@
   <!-- Toolbar color (JS will keep this synced with the gradient position) -->
   <meta id="theme-color" name="theme-color" content="#9fd3ff" />
 
-  <!-- Password gate EARLY, so nothing loads if wrong -->
+  <!-- PASSWORD GATE: runs early, before anything renders -->
   <script>
     (function () {
-      var answer = prompt("What did I think your name was?");
+      // Default: page stays hidden until we explicitly show it
+      // We'll reveal <body> only if the password is correct.
       var ok = false;
-      if (answer != null) {
-        var normalized = answer.trim().toLowerCase();
-        ok = (normalized === "jordan");
+      try {
+        var answer = prompt("What did I think your name was?");
+        if (answer != null) {
+          ok = (answer.trim().toLowerCase() === "jordan");
+        }
+      } catch (e) {
+        ok = false;
       }
-      if (!ok) {
-        // Do not show the website at all
-        window.location.replace("about:blank");
-      } else {
-        // Set a flag we can check later if needed
+
+      if (ok) {
+        // Mark access granted; reveal body once DOM is ready
         window.__ACCESS_OK__ = true;
+        document.addEventListener("DOMContentLoaded", function () {
+          document.body.style.display = "block";
+          // Ensure scroll is at the top after prompt on mobile
+          window.scrollTo(0, 0);
+        });
+      } else {
+        // Deny: keep page hidden, stop further loading, and navigate away.
+        try { window.stop && window.stop(); } catch(e) {}
+        // Use replace so Back doesn't return to the protected page
+        try { window.location.replace("about:blank"); } catch(e) {}
+        // As a hard fallback, clear the document ASAP
+        document.addEventListener("DOMContentLoaded", function () {
+          document.body.innerHTML = "";
+        });
       }
     })();
   </script>
 
-  <!-- Optional PWA-style if added to Home Screen
+  <!-- Optional PWA style if added to Home Screen
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   -->
 
   <style>
     /* Solid fallback to avoid white flashes during iOS rubber-banding.
-       Match top area to the sky-blue so bounce at top looks natural. */
+       Match the top area to the sky-blue so bounce at top looks natural. */
     html {
       min-height: 100%;
       background-color: #9fd3ff; /* sky-blue (top stop) */
     }
 
     body {
+      /* IMPORTANT: start hidden; password gate will show on success */
+      display: none;
+
       margin: 0;
       padding-top: env(safe-area-inset-top);
       padding-bottom: env(safe-area-inset-bottom);
@@ -59,12 +79,11 @@
       min-height: 100dvh;
     }
 
-    /* Document-anchored gradient:
-       - It scrolls WITH the page, so the top of the PAGE is blue,
-         and the bottom is pink/red when you get there. */
+    /* Document-anchored gradient (scrolls with page):
+       Top of the PAGE is blue; bottom becomes pink/red when you get there. */
     body::before {
       content: "";
-      position: absolute; /* <-- anchors to the document height, not viewport */
+      position: absolute; /* anchors to the document height, not viewport */
       inset: 0;
       z-index: -1;
       background: linear-gradient(
@@ -173,22 +192,22 @@
     <p>Given we are 1500 miles apart, I figured I would write you some digital art. I hope you know by now you have my heart.</p>
 
     <div class="photo-pair">
-      <img src="photo1.jpeg" alt="">
-      <img src="photo2.jpeg" alt="">
+      photo1.jpeg
+      photo2.jpeg
     </div>
 
     <p>Everyday I miss you more, I can't believe we met when we were sophomores...</p>
 
     <div class="photo-pair">
-      <img src="photo3.jpeg" alt="">
-      <img src="photo4.jpeg" alt="">
+      photo3.jpeg
+      photo4.jpeg
     </div>
 
     <p>So meli, if you would allow me, I have only one question for you...</p>
 
     <div class="photo-pair">
-      <img src="photo5.jpeg" alt="">
-      <img src="photo6.jpeg" alt="">
+      photo5.jpeg
+      photo6.jpeg
     </div>
 
     <h2>Will you be my Valentine? 💫</h2>
@@ -203,8 +222,16 @@
   </div>
 
   <script>
+    // SAFETY: If somehow scripts run without access, abort early.
+    if (!window.__ACCESS_OK__) {
+      try { window.stop && window.stop(); } catch(e) {}
+      try { window.location.replace("about:blank"); } catch(e) {}
+    }
+
     // --- Main interactions ---
     document.addEventListener("DOMContentLoaded", function() {
+      if (!window.__ACCESS_OK__) return; // double-guard
+
       const yesBtn = document.getElementById("yesBtn");
       const noBtn = document.getElementById("noBtn");
       const response = document.getElementById("response");
@@ -286,14 +313,11 @@
         const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
         const p = clamp01(window.scrollY / maxScroll);
 
-        // Match the visual gradient mapping along the document
         let color;
         if (p <= MID_POS) {
-          const t = p / MID_POS;
-          color = mix(TOP, MID, t);
+          color = mix(TOP, MID, p / MID_POS);
         } else {
-          const t = (p - MID_POS) / (1 - MID_POS);
-          color = mix(MID, BOT, t);
+          color = mix(MID, BOT, (p - MID_POS) / (1 - MID_POS));
         }
 
         themeMeta.setAttribute('content', toHex(color));
