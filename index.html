@@ -7,25 +7,33 @@
 
   <style>
     html, body {
-      height: -webkit-fill-available; /* iPhone full height fix */
-    }
-
-    body {
+      height: 100%;
+      padding: 0;
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
       background: linear-gradient(to bottom, #9fd3ff, #ff7eb9);
       color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
       text-align: center;
       line-height: 1.8;
-      overflow-x: hidden; /* prevent horizontal scroll */
-      min-height: 100vh; /* ensures background fills viewport */
-      background-attachment: fixed; /* prevents white flash on scroll */
+      overflow-x: hidden;
+    }
+
+    /* Ensure background extends into iPhone safe area */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: inherit;
+      z-index: -1;
     }
 
     .card {
       max-width: 700px;
       margin: 0 auto;
-      padding: 60px 20px 40px 20px; /* extra top padding for notch */
+      padding: calc(60px + env(safe-area-inset-top)) 20px 40px 20px; /* add safe area */
     }
 
     h1 {
@@ -119,7 +127,7 @@
   <script>
     var password = prompt("What did I think your name was?");
     if(password === "jordan" || password === "Jordan" || password === "jordan " || password === "Jordan " ) {
-      window.scrollTo(0, 0); // fix mobile viewport after prompt
+      window.scrollTo(0, 0);
     } else {
       document.body.innerHTML = "<h1>Access Denied 💔</h1>";
       document.body.style.background = "#1e1e1e";
@@ -161,7 +169,7 @@
       Yay! I was a little worried you would say no 😅<br>
       I love you so much girl!
     </p>
-    
+
     <script>
       document.addEventListener("DOMContentLoaded", function() {
         const yesBtn = document.getElementById("yesBtn");
@@ -188,7 +196,6 @@
           emoji.style.top = (window.innerHeight - 100) + 'px';
 
           document.body.appendChild(emoji);
-
           setTimeout(() => { emoji.remove(); }, 2000);
         }
 
@@ -221,6 +228,6 @@
       });
     </script>
 
-</div>
+  </div>
 </body>
 </html>
