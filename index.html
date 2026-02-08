@@ -7,12 +7,12 @@
   <!-- Proper iPhone viewport handling -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
-  <!-- Safari/iOS toolbar color (must be a SOLID color) -->
-  <meta name="theme-color" content="#caa8e9" />
-  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#caa8e9" />
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#7a6bb5" />
+  <!-- Safari/iOS toolbar color (must be solid). Pick a mid-tone that complements the gradient -->
+  <meta name="theme-color" content="#d89dd0" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#d89dd0" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#8a6fb2" />
 
-  <!-- Optional: uncomment if you (or the recipient) will "Add to Home Screen"
+  <!-- Optional: if added to Home Screen (PWA look), uncomment:
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   -->
@@ -21,7 +21,7 @@
     /* Solid fallback to avoid white flash during iOS overscroll */
     html, body {
       height: 100%;
-      background-color: #caa8e9; /* match theme-color */
+      background-color: #d89dd0; /* match theme-color */
     }
 
     body {
@@ -44,9 +44,16 @@
     body::before {
       content: "";
       position: fixed;
-      inset: 0;           /* top:0; right:0; bottom:0; left:0 */
-      z-index: -1;        /* behind all content */
-      background: linear-gradient(to bottom, #9fd3ff, #ff7eb9); /* blue → pink */
+      inset: 0;
+      z-index: -1;
+
+      /* Blue (top) → Valentine pink → Pink/Red (bottom) */
+      background: linear-gradient(
+        to bottom,
+        #9fd3ff 0%,
+        #ff7eb9 60%,
+        #ff4d6d 100%
+      );
     }
 
     .card {
@@ -215,7 +222,6 @@
           emoji.style.top = (window.innerHeight - 100) + 'px';
 
           document.body.appendChild(emoji);
-
           setTimeout(() => { emoji.remove(); }, 2000);
         }
 
@@ -241,7 +247,6 @@
           heart.style.animationDuration = duration + 's';
 
           document.body.appendChild(heart);
-
           setTimeout(() => { heart.remove(); }, duration * 1000);
         }
 
