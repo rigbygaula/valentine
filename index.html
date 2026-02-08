@@ -3,17 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <title>For You 💙</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Proper iPhone viewport handling -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- Safari toolbar color (must be solid) -->
+  <meta name="theme-color" content="#caa8e9">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#caa8e9">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#7a6bb5">
 
   <style>
+    html, body {
+      height: 100%;
+      background-color: #caa8e9; /* fallback so iPhone rubber-banding isn’t white */
+    }
+
     body {
       margin: 0;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      background: linear-gradient(to bottom, #9fd3ff, #ff7eb9); /* blue → Valentine pink */
+      background: linear-gradient(to bottom, #9fd3ff, #ff7eb9);
+      background-attachment: fixed; /* prevents white flash on scroll */
       color: #ffffff;
       text-align: center;
       line-height: 1.8;
-      overflow-x: hidden; /* prevent horizontal scroll */
+      overflow-x: hidden;
     }
 
     .card {
@@ -72,7 +88,6 @@
       box-shadow: 0 12px 25px rgba(0,0,0,0.4);
     }
 
-    /* Floating hearts animation for background */
     .floating-heart {
       position: fixed;
       font-size: 20px;
@@ -85,7 +100,6 @@
       100% { transform: translateY(-200px) scale(1.5); opacity: 0; }
     }
 
-    /* Floating love emojis on Yes button click */
     .love-emoji {
       position: fixed;
       font-size: 24px;
@@ -112,8 +126,8 @@
   <!-- Password prompt -->
   <script>
     var password = prompt("What did I think your name was?");
-    if(password === "jordan" || password === "Jordan" || password === "jordan " || password === "Jordan " ) {
-      window.scrollTo(0, 0); // fix mobile viewport after prompt
+    if(password === "jordan" || password === "Jordan" || password === "jordan " || password === "Jordan ") {
+      window.scrollTo(0, 0);
     } else {
       document.body.innerHTML = "<h1>Access Denied 💔</h1>";
       document.body.style.background = "#1e1e1e";
@@ -132,17 +146,14 @@
       <img src="photo2.jpeg" alt="">
     </div>
 
-    <p>Everyday I miss you more, I can't believe we met when we were sophomores...</p>
+    <p>Everyday I miss you more, I can't believe I met you as a sophomore...</p>
 
     <div class="photo-pair">
       <img src="photo3.jpeg" alt="">
-      <img src="photo4.jpeg" alt="">
-    </div>
-
-    <p>So meli, if you would allow me, I have only one question for you...</p>
+      <img srchave only one question for you...</p>
 
     <div class="photo-pair">
-      <img src="photo5.jpeg" alt="">
+      photo5.jpeg
       <img src="photo6.jpeg" alt="">
     </div>
 
@@ -162,15 +173,11 @@
         const noBtn = document.getElementById("noBtn");
         const response = document.getElementById("response");
 
-        // Yes button click
         yesBtn.addEventListener("click", function() {
           response.style.display = "block";
           response.scrollIntoView({ behavior: 'smooth' });
 
-          // Create 5 floating love emojis
-          for (let i = 0; i < 5; i++) {
-            createLoveEmoji();
-          }
+          for (let i = 0; i < 5; i++) createLoveEmoji();
         });
 
         function createLoveEmoji() {
@@ -183,11 +190,9 @@
           emoji.style.top = (window.innerHeight - 100) + 'px';
 
           document.body.appendChild(emoji);
-
-          setTimeout(() => { emoji.remove(); }, 2000);
+          setTimeout(() => emoji.remove(), 2000);
         }
 
-        // No button shrinking
         let size = 100;
         noBtn.addEventListener("click", function() {
           size -= 10;
@@ -195,7 +200,6 @@
           noBtn.style.transform = "scale(" + size/100 + ")";
         });
 
-        // Continuous floating hearts in background
         function createFloatingHeart() {
           const heart = document.createElement('div');
           heart.className = 'floating-heart';
@@ -209,14 +213,13 @@
           heart.style.animationDuration = duration + 's';
 
           document.body.appendChild(heart);
-
-          setTimeout(() => { heart.remove(); }, duration * 1000);
+          setTimeout(() => heart.remove(), duration * 1000);
         }
 
         setInterval(createFloatingHeart, 500);
       });
     </script>
 
-</div>
+  </div>
 </body>
 </html>
