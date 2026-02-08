@@ -7,56 +7,39 @@
 
   <style>
     body {
-      
-    <script>
-      var password = prompt("What did I think your name was?");
-      if(password !== "Jordan" && password !== "jordan") {
-        document.body.innerHTML = "<h1>Access Denied 💔</h1>";
-      }
-    </script>
-
-      
       margin: 0;
-      min-height: 100vh;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
       background: linear-gradient(to bottom, #9fd3ff, #1e3a8a);
-      display: flex;
-      justify-content: center;
-      align-items: center;
       color: #ffffff;
       text-align: center;
+      line-height: 1.6;
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(12px);
-      padding: 40px;
-      border-radius: 24px;
       max-width: 700px;
-      width: 90%;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+      margin: 0 auto;
+      padding: 30px 20px;
     }
 
     h1 {
-      margin-top: 0;
-      font-weight: 600;
       font-size: 32px;
+      font-weight: 600;
+      margin-bottom: 20px;
     }
 
     p {
       font-size: 18px;
-      line-height: 1.6;
-      margin: 20px 0;
+      margin: 25px 0;
     }
 
-    .photos {
+    .photo-pair {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 16px;
-      margin: 30px 0;
+      margin: 20px 0;
     }
 
-    .photos img {
+    .photo-pair img {
       width: 100%;
       border-radius: 16px;
       object-fit: cover;
@@ -70,7 +53,7 @@
     }
 
     button {
-      margin-top: 25px;
+      margin: 30px 0;
       background: #f9b6c8;
       color: #1e3a8a;
       border: none;
@@ -91,17 +74,11 @@
       h1 {
         font-size: 26px;
       }
-
       p {
         font-size: 16px;
       }
-
       h2 {
         font-size: 22px;
-      }
-
-      .card {
-        padding: 28px;
       }
     }
   </style>
@@ -109,33 +86,63 @@
 
 <body>
 
+  <!-- Password prompt -->
+  <script>
+    var password = prompt("What did I think your name was?");
+    if(password !== "jordan" && password !== "Jordan") {
+      document.body.innerHTML = "<h1>Access Denied 💔</h1>";
+    }
+  </script>
+
   <div class="card">
+
     <h1>Hi my love 💙</h1>
 
-    <p>
-      Being far from you isn’t easy.<br>
-      But somehow, you still feel close.
-    </p>
+    <!-- First text block -->
+    <p>Even though we’re far apart, I think about you every single day.</p>
 
-    <div class="photos">
-      <img src="photo1.jpeg" alt="">
-      <img src="photo2.jpeg" alt="">
-      <img src="photo3.jpeg" alt="">
-      <img src="photo4.jpeg" alt="">
-      <img src="photo5.jpeg" alt="">
-      <img src="photo6.jpeg" alt="">
+    <!-- First 2 photos -->
+    <div class="photo-pair">
+      <img src="photo1.jpg" alt="">
+      <img src="photo2.jpg" alt="">
     </div>
 
-    <p>
-      Until we’re under the same sky…
-    </p>
+    <!-- Second text block -->
+    <p>Some moments feel bigger when I imagine sharing them with you.</p>
 
+    <!-- Next 2 photos -->
+    <div class="photo-pair">
+      <img src="photo3.jpg" alt="">
+      <img src="photo4.jpg" alt="">
+    </div>
+
+    <!-- Third text block -->
+    <p>No matter the distance, I always feel close to you in my heart.</p>
+
+    <!-- Last 2 photos -->
+    <div class="photo-pair">
+      <img src="photo5.jpg" alt="">
+      <img src="photo6.jpg" alt="">
+    </div>
+
+    <!-- Final question -->
     <h2>Will you be my Valentine? 💫</h2>
 
-    <button onclick="alert('I knew you’d say yes 💙')">
+    <button onclick="showLove()">
       Yes, always
     </button>
+
+    <p id="response" style="display:none; margin-top:20px; font-size:18px;">
+      I can’t wait to spend so many more Valentines with you 💙
+    </p>
+
   </div>
+
+  <script>
+    function showLove() {
+      document.getElementById("response").style.display = "block";
+    }
+  </script>
 
 </body>
 </html>
