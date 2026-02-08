@@ -72,7 +72,7 @@
       box-shadow: 0 12px 25px rgba(0,0,0,0.4);
     }
 
-    /* Floating hearts animation */
+    /* Floating hearts animation for background */
     .floating-heart {
       position: fixed;
       font-size: 20px;
@@ -85,7 +85,7 @@
       100% { transform: translateY(-200px) scale(1.5); opacity: 0; }
     }
 
-    /* Existing love emojis for Yes button */
+    /* Floating love emojis on Yes button click */
     .love-emoji {
       position: fixed;
       font-size: 24px;
@@ -148,8 +148,8 @@
 
     <h2>Will you be my Valentine? 💫</h2>
 
-    <button id="yesBtn" onclick="showLove()">Yes Jesse!</button>
-    <button id="noBtn" onclick="shrinkNo()">No 😢</button>
+    <button id="yesBtn">Yes Jesse!</button>
+    <button id="noBtn">No 😢</button>
 
     <p id="response" style="display:none; margin-top:20px; font-size:20px;">
       Yay! I was a little worried you would say no 😅<br>
@@ -157,9 +157,66 @@
     </p>
     
     <script>
-      // Yes button scroll + floating hearts
-      function showLove() {
+      document.addEventListener("DOMContentLoaded", function() {
+        const yesBtn = document.getElementById("yesBtn");
+        const noBtn = document.getElementById("noBtn");
         const response = document.getElementById("response");
-        response.style.display = "block";
 
-        // Scroll smoothly to
+        // Yes button click
+        yesBtn.addEventListener("click", function() {
+          response.style.display = "block";
+          response.scrollIntoView({ behavior: 'smooth' });
+
+          // Create 5 floating love emojis
+          for (let i = 0; i < 5; i++) {
+            createLoveEmoji();
+          }
+        });
+
+        function createLoveEmoji() {
+          const emoji = document.createElement('div');
+          emoji.className = 'love-emoji';
+          const hearts = ['💖','💙','💜','💘','💞'];
+          emoji.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+
+          emoji.style.left = Math.random() * window.innerWidth + 'px';
+          emoji.style.top = (window.innerHeight - 100) + 'px';
+
+          document.body.appendChild(emoji);
+
+          setTimeout(() => { emoji.remove(); }, 2000);
+        }
+
+        // No button shrinking
+        let size = 100;
+        noBtn.addEventListener("click", function() {
+          size -= 10;
+          if(size < 30) size = 30;
+          noBtn.style.transform = "scale(" + size/100 + ")";
+        });
+
+        // Continuous floating hearts in background
+        function createFloatingHeart() {
+          const heart = document.createElement('div');
+          heart.className = 'floating-heart';
+          const hearts = ['💖','💙','💜','💘','💞','❤️','💕'];
+          heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+
+          heart.style.left = Math.random() * window.innerWidth + 'px';
+          heart.style.bottom = '-50px';
+
+          const duration = 2 + Math.random() * 3;
+          heart.style.animationDuration = duration + 's';
+
+          document.body.appendChild(heart);
+
+          setTimeout(() => { heart.remove(); }, duration * 1000);
+        }
+
+        setInterval(createFloatingHeart, 500);
+      });
+    </script>
+
+</div>
+</body>
+</html>
