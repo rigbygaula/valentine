@@ -9,10 +9,11 @@
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      background: linear-gradient(to bottom, #9fd3ff, #1e3a8a);
+      background: linear-gradient(to bottom, #9fd3ff, #ff7eb9); /* blue → Valentine pink */
       color: #ffffff;
       text-align: center;
       line-height: 1.8;
+      overflow-x: hidden; /* prevent horizontal scroll */
     }
 
     .card {
@@ -71,7 +72,20 @@
       box-shadow: 0 12px 25px rgba(0,0,0,0.4);
     }
 
-    /* Floating love emojis */
+    /* Floating hearts animation */
+    .floating-heart {
+      position: fixed;
+      font-size: 20px;
+      pointer-events: none;
+      animation: floatHeart linear forwards;
+    }
+
+    @keyframes floatHeart {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-200px) scale(1.5); opacity: 0; }
+    }
+
+    /* Existing love emojis for Yes button */
     .love-emoji {
       position: fixed;
       font-size: 24px;
@@ -118,7 +132,7 @@
       <img src="photo2.jpeg" alt="">
     </div>
 
-    <p>Everyday I miss you more, I can't believe I met you as a sophomore...</p>
+    <p>Everyday I miss you more, I can't believe we met when we were sophomores...</p>
 
     <div class="photo-pair">
       <img src="photo3.jpeg" alt="">
@@ -148,39 +162,4 @@
         const response = document.getElementById("response");
         response.style.display = "block";
 
-        // Scroll smoothly to response
-        response.scrollIntoView({ behavior: 'smooth' });
-
-        // Create 5 floating love emojis
-        for (let i = 0; i < 5; i++) {
-          createLoveEmoji();
-        }
-      }
-
-      function createLoveEmoji() {
-        const emoji = document.createElement('div');
-        emoji.className = 'love-emoji';
-        const hearts = ['💖','💙','💜','💘','💞'];
-        emoji.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-
-        emoji.style.left = Math.random() * window.innerWidth + 'px';
-        emoji.style.top = (window.innerHeight - 100) + 'px';
-
-        document.body.appendChild(emoji);
-
-        setTimeout(() => { emoji.remove(); }, 2000);
-      }
-
-      // No button shrinking
-      let noBtn = document.getElementById("noBtn");
-      let size = 100;
-      function shrinkNo() {
-        size -= 10;
-        if(size < 30) size = 30;
-        noBtn.style.transform = "scale(" + size/100 + ")";
-      }
-    </script>
-
-</div>
-</body>
-</html>
+        // Scroll smoothly to
