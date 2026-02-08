@@ -22,18 +22,17 @@
     }
 
     h1 {
-      font-size: 38px; /* bigger */
+      font-size: 38px;
       font-weight: 600;
       margin-bottom: 25px;
     }
 
     p {
-      font-size: 22px; /* bigger */
+      font-size: 22px;
       margin: 30px 0;
-      font-weight: 600; /* makes all <p> text bold */
+      font-weight: 600;
     }
 
-    /* Stack photos vertically instead of side by side */
     .photo-pair {
       display: flex;
       flex-direction: column;
@@ -50,7 +49,7 @@
 
     h2 {
       margin-top: 35px;
-      font-size: 30px; /* bigger */
+      font-size: 30px;
       font-weight: 500;
     }
 
@@ -60,7 +59,7 @@
       color: #1e3a8a;
       border: none;
       padding: 18px 40px;
-      font-size: 20px; /* bigger */
+      font-size: 20px;
       border-radius: 999px;
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -72,20 +71,24 @@
       box-shadow: 0 12px 25px rgba(0,0,0,0.4);
     }
 
+    /* Floating love emojis */
+    .love-emoji {
+      position: fixed;
+      font-size: 24px;
+      pointer-events: none;
+      animation: floatUp 2s ease-out forwards;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-150px) scale(1.5); opacity: 0; }
+    }
+
     @media (max-width: 600px) {
-      h1 {
-        font-size: 30px;
-      }
-      p {
-        font-size: 20px;
-      }
-      h2 {
-        font-size: 26px;
-      }
-      button {
-        font-size: 18px;
-        padding: 16px 32px;
-      }
+      h1 { font-size: 30px; }
+      p { font-size: 20px; }
+      h2 { font-size: 26px; }
+      button { font-size: 18px; padding: 16px 32px; }
     }
   </style>
 </head>
@@ -96,8 +99,7 @@
   <script>
     var password = prompt("What did I think your name was?");
     if(password === "jordan" || password === "Jordan" || password === "jordan " || password === "Jordan " ) {
-      // password prompt reset
-        window.scrollTo(0, 0);
+      window.scrollTo(0, 0); // fix mobile viewport after prompt
     } else {
       document.body.innerHTML = "<h1>Access Denied 💔</h1>";
       document.body.style.background = "#1e1e1e";
@@ -105,64 +107,80 @@
     }
   </script>
 
-  <div class="card">
+  <div class="card" id="page">
 
     <h1>Hello my beautiful girl :) </h1>
 
-    <!-- First text block -->
     <p>Given we are 1500 miles apart, I figured I would write you some digital art. I hope you know by now you have my heart.</p>
 
-    <!-- First 2 photos stacked -->
     <div class="photo-pair">
       <img src="photo1.jpeg" alt="">
       <img src="photo2.jpeg" alt="">
     </div>
 
-    <!-- Second text block -->
     <p>Everyday I miss you more, I can't believe we met when we were sophomores...</p>
 
-    <!-- Next 2 photos stacked -->
     <div class="photo-pair">
       <img src="photo3.jpeg" alt="">
       <img src="photo4.jpeg" alt="">
     </div>
 
-    <!-- Third text block -->
     <p>So meli, if you would allow me, I have only one question for you...</p>
 
-    <!-- Last 2 photos stacked -->
     <div class="photo-pair">
       <img src="photo5.jpeg" alt="">
       <img src="photo6.jpeg" alt="">
     </div>
 
-    <!-- Final question -->
     <h2>Will you be my Valentine? 💫</h2>
 
     <button id="yesBtn" onclick="showLove()">Yes Jesse!</button>
     <button id="noBtn" onclick="shrinkNo()">No 😢</button>
 
     <p id="response" style="display:none; margin-top:20px; font-size:20px;">
-      Yay! I was a little worried you would say no 😅
-
+      Yay! I was a little worried you would say no 😅<br>
       I love you so much girl!
     </p>
     
     <script>
-      // Yes button
+      // Yes button scroll + floating hearts
       function showLove() {
-        document.getElementById("response").style.display = "block";
+        const response = document.getElementById("response");
+        response.style.display = "block";
+
+        // Scroll smoothly to response
+        response.scrollIntoView({ behavior: 'smooth' });
+
+        // Create 5 floating love emojis
+        for (let i = 0; i < 5; i++) {
+          createLoveEmoji();
+        }
       }
-    
+
+      function createLoveEmoji() {
+        const emoji = document.createElement('div');
+        emoji.className = 'love-emoji';
+        const hearts = ['💖','💙','💜','💘','💞'];
+        emoji.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+
+        emoji.style.left = Math.random() * window.innerWidth + 'px';
+        emoji.style.top = (window.innerHeight - 100) + 'px';
+
+        document.body.appendChild(emoji);
+
+        setTimeout(() => { emoji.remove(); }, 2000);
+      }
+
       // No button shrinking
       let noBtn = document.getElementById("noBtn");
-      let size = 100; // starting percent
+      let size = 100;
       function shrinkNo() {
-        size -= 10; // shrink by 10% each click
-        if(size < 30) size = 30; // don't disappear completely
+        size -= 10;
+        if(size < 30) size = 30;
         noBtn.style.transform = "scale(" + size/100 + ")";
       }
     </script>
 
+</div>
 </body>
 </html>
